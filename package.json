@@ -14,6 +14,7 @@
   "scripts": {
     "build": "rollup -c rollup.config.ts",
     "test": "echo 'No test for this library' && exit 0",
+    "prepublish": "npm run build",
     "publish": "np"
   },
   "author": "Yury Kundin <ykundin@yandex.ru>",

@@ -22,6 +22,7 @@
   "homepage": "https://github.com/kundinos/nanostores",
   "repository": "kundinos/nanostores",
   "sideEffects": false,
+  "main": "./dist/index.js",
   "files": [
     "./dist"
   ],

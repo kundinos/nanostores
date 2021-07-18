@@ -1,6 +1,6 @@
 {
-  "name": "nanostores",
-  "version": "0.3.3",
+  "name": "@kundinos/nanostores",
+  "version": "0.3.2",
   "description": "A tiny (152 bytes) state manager for React/Preact/Vue/Svelte with many atomic tree-shakable stores",
   "keywords": [
     "logux",
@@ -11,21 +11,27 @@
     "svelte",
     "store"
   ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.es.js",
+  "jsnext:main": "./dist/index.es.js",
   "scripts": {
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage && eslint . && check-dts && size-limit && yaspeller *.md"
+    "build": "rollup -c rollup.config.ts",
+    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage && eslint . && check-dts && size-limit && yaspeller *.md",
+    "publish": "np --preview"
   },
-  "author": "Andrey Sitnik <andrey@sitnik.ru>",
+  "author": "Yury Kundin <ykundin@yandex.ru>",
   "license": "MIT",
-  "homepage": "https://logux.io/",
-  "repository": "ai/nanostores",
+  "homepage": "https://github.com/kundinos/nanostores",
+  "repository": "kundinos/nanostores",
   "sideEffects": false,
-  "type": "module",
-  "types": "./index.d.ts",
+  "files": [
+    "./dist/*"
+  ],
   "exports": {
-    ".": "./index.js",
-    "./vue": "./vue/index.js",
-    "./react": "./react/index.js",
-    "./preact": "./preact/index.js",
+    ".": "./dist/index.js",
+    "./vue": "./dist/vue/index.js",
+    "./react": "./dist/react/index.js",
+    "./preact": "./dist/preact/index.js",
     "./package.json": "./package.json"
   },
   "engines": {
@@ -63,9 +69,10 @@
     "@testing-library/vue": "^6.4.0",
     "@types/jest": "^26.0.23",
     "@types/jsdom": "^16.2.11",
-    "@types/node": "^15.12.4",
+    "@types/node": "^15.14.2",
     "@types/react": "^17.0.11",
     "@types/react-dom": "^17.0.8",
+    "@types/rollup-plugin-peer-deps-external": "^2.2.1",
     "@types/ws": "^7.4.5",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
@@ -86,10 +93,16 @@
     "jest-localstorage-mock": "^2.4.14",
     "lint-staged": "^11.0.0",
     "nanodelay": "^2.0.0",
+    "np": "^7.5.0",
     "preact": "^10.5.13",
     "prettier": "^2.3.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "rollup": "^2.53.2",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.30.0",
     "simple-git-hooks": "^2.4.1",
     "size-limit": "^4.12.0",
     "ts-jest": "^27.0.3",

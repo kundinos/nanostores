@@ -11,9 +11,6 @@
     "svelte",
     "store"
   ],
-  "main": "./dist/index.js",
-  "module": "./dist/index.es.js",
-  "jsnext:main": "./dist/index.es.js",
   "scripts": {
     "build": "rollup -c rollup.config.ts",
     "test": "echo 'No test for this library' && exit 0",

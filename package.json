@@ -23,25 +23,22 @@
   "homepage": "https://github.com/kundinos/nanostores",
   "repository": "kundinos/nanostores",
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "files": [
-    "./dist"
-  ],
+  "main": "./index.cjs",
   "exports": {
     "./": {
-      "require": "./dist/index.js",
+      "require": "./index.cjs",
       "default": "./index.js"
     },
     "./vue": {
-      "require": "./dist/vue/index.js",
-      "default": "./react/index.js"
+      "require": "./vue/index.cjs",
+      "default": "./vue/index.js"
     },
     "./react": {
-      "require": "./dist/react/index.js",
+      "require": "./react/index.cjs",
       "default": "./react/index.js"
     },
     "./preact": {
-      "require": "./dist/preact/index.js",
+      "require": "./preact/index.cjs",
       "default": "./preact/index.js"
     },
     "./package.json": "./package.json"

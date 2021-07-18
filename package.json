@@ -16,7 +16,7 @@
   "jsnext:main": "./dist/index.es.js",
   "scripts": {
     "build": "rollup -c rollup.config.ts",
-    "test": "node --experimental-vm-modules node_modules/.bin/jest --coverage && eslint . && check-dts && size-limit && yaspeller *.md",
+    "test": "echo 'No test for this library' && exit 0",
     "publish": "np --preview"
   },
   "author": "Yury Kundin <ykundin@yandex.ru>",
@@ -89,8 +89,6 @@
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-security": "^1.4.0",
     "eslint-plugin-unicorn": "^33.0.1",
-    "jest": "^27.0.5",
-    "jest-localstorage-mock": "^2.4.14",
     "lint-staged": "^11.0.0",
     "nanodelay": "^2.0.0",
     "np": "^7.5.0",
@@ -130,23 +128,6 @@
     "*.ts": [
       "prettier --write",
       "eslint --fix"
-    ]
-  },
-  "jest": {
-    "preset": "ts-jest/presets/default-esm",
-    "globals": {
-      "ts-jest": {
-        "useESM": true
-      }
-    },
-    "testEnvironment": "jsdom",
-    "coverageThreshold": {
-      "global": {
-        "statements": 100
-      }
-    },
-    "setupFiles": [
-      "jest-localstorage-mock"
     ]
   },
   "eslintConfig": {

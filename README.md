@@ -1,31 +1,31 @@
 # Nano Stores
 
-<img align="right" width="95" height="148" title="Logux logotype"
-     src="https://logux.io/branding/logotype.svg">
+<img align="right" width="92" height="92" title="Nano Stores logo"
+     src="https://nanostores.github.io/nanostores/logo.svg">
 
-A tiny state manager for **React**, **Preact**, **Vue**, **Svelte**,
-and vanilla JS. It uses **many atomic stores** and direct manipulation.
+A tiny state manager for **React**, **React Native**, **Preact**, **Vue**,
+**Svelte**, and vanilla JS. It uses **many atomic stores**
+and direct manipulation.
 
-* **Small.** between 152 and 459 bytes (minified and gzipped).
-  Zero dependencies. It uses [Size Limit] to control size.
+* **Small.** between 172 and 526 bytes (minified and gzipped).
+  Zero dependencies. It uses [Size Limit] to control size.
 * **Fast.** With small atomic and derived stores, you do not need to call
-  the selector function for all components on every store change.
+  the selector function for all components on every store change.
 * **Tree Shakable.** The chunk contains only stores used by components
   in the chunk.
-* Was designed to move logic from components to stores. Already has **router**
-  and **persistent** stores.
+* Was designed to move logic from components to stores.
 * It has good **TypeScript** support.
 
 ```ts
 // store/users.ts
-import { createStore, getValue } from 'nanostores'
+import { createStore, update } from 'nanostores'
 
 export const users = createStore<User[]>(() => {
   users.set([])
 })
 
 export function addUser(user: User) {
-  users.set([...getValue(users), user])
+  update(users, current => [...current, user])
 }
 ```
 
@@ -56,13 +56,12 @@ export const Admins = () => {
 }
 ```
 
-<a href="https://evilmartians.com/?utm_source=logux-client">
+<a href="https://evilmartians.com/?utm_source=nanostores">
   <img src="https://evilmartians.com/badges/sponsored-by-evil-martians.svg"
        alt="Sponsored by Evil Martians" width="236" height="54">
 </a>
 
-[Size Limit]: https://github.com/ai/size-limit
-[Logux]:      https://logux.io/
+[Size Limit]: https://github.com/ai/size-limit
 
 ## Table of Contents
 
@@ -70,14 +69,14 @@ export const Admins = () => {
 * [Guide](#guide)
 * Integration
   * [React & Preact](#react--preact)
+  * [Next.js](#nextjs)
   * [Vue](#vue)
   * [Svelte](#svelte)
   * [Vanilla JS](#vanilla-js)
+  * [Server-Side Rendering](#server-side-rendering)
   * [Tests](#tests)
 * [Best Practices](#best-practices)
-* Build-in Stores
-  * [Persistent](#persistent)
-  * [Router](#router)
+* [Known Issues](#known-issues)
 
 
 ## Install
@@ -88,8 +87,9 @@ npm install nanostores
 
 ## Tools
 
-* [Persistent](#persistent) store to save data to `localStorage`.
-* [Router](#router) store.
+* [Persistent](https://github.com/nanostores/persistent) store to save data
+  to `localStorage` and synchronize changes between browser tabs.
+* [Router](https://github.com/nanostores/router) store.
 * [Logux Client](https://github.com/logux/client): stores with WebSocket
   sync and CRDT conflict resolution.
 
@@ -98,8 +98,8 @@ npm install nanostores
 
 In Nano Stores, stores are **smart**. They subscribe to events,
 validate input, send AJAX requests, etc. For instance,
-build-in [Router](#Router) store subscribes to click on `<a>`
-and `window.onpopstate`. It simplifies testing and switching
+[Router](https://github.com/nanostores/router) store subscribes to click
+on `<a>` and `window.onpopstate`. It simplifies testing and switching
 between UI frameworks (like from React to React Native).
 
 ```ts
@@ -117,10 +117,10 @@ export const simpleStore = createStore<StoreType>(() => {
 ```
 
 Stores have two modes: **active** and **disabled**. From the beginning,
-the store is in disabled mode and does not keep value. On the first subscriber,
-the store will call the initializer and will move to active mode.
-One second after unsubscribing of the last listener, the store will call
-the destructor.
+the store is in disabled mode and does not keep value. On the first call
+of `store.listen` or `store.subscribe`, the store will call the initializer
+and will move to active mode. One second after unsubscribing
+of the last listener, the store will call the destructor.
 
 The only way to get store’s value is to subscribe to store’s changes:
 
@@ -134,12 +134,20 @@ const unsubscribe1 = store.subscribe(value => {
 })
 ```
 
-By we have shortcut to subscribe, return value and unsubscribe:
+We have shortcut to subscribe, return value and unsubscribe:
 
 ```ts
 import { getValue } from 'nanostores'
 
 getValue(store) //=> store’s value
+```
+
+And there is shortcut to get current value, change it and set new value.
+
+```ts
+import { update } from 'nanostores'
+
+update(store, value => newValue)
 ```
 
 
@@ -148,23 +156,36 @@ getValue(store) //=> store’s value
 Simple store API is the basement for all other stores.
 
 ```ts
-import { createStore, getValue } from 'nanostores'
+import { createStore, update } from 'nanostores'
 
 export const counter = createStore<number>(() => {
   counter.set(0)
 })
 
 export function increaseCounter() {
-  counter.set(getValue(counter) + 1)
+  update(counter, value => value + 1)
 }
 ```
 
 You can change store value by calling the `store.set(newValue)` method.
 
+All async operations in store you need to wrap to `effect` (or use `startEffect`).
+It will help to wait async operations end in tests.
+
+```ts
+import { effect } from 'nanostore'
+
+export function saveUser() {
+  effect(async () => {
+    await api.saveUser(getValue(userStore))
+  })
+}
+```
+
 
 ### Map Store
 
-This store with key-value pairs.
+This store is with key-value pairs.
 
 ```ts
 import { createMap } from 'nanostores'
@@ -180,7 +201,8 @@ export const profile = createMap<ProfileValue>(() => {
 ```
 
 In additional to `store.set(newObject)` it has `store.setKey(key, value)`
-to change specific key.
+to change specific key. There is a special shortcut
+`updateKey(store, key, updater)` in additional to `update(store, updater)`.
 
 Changes listener receives changed key as a second argument.
 
@@ -192,6 +214,27 @@ profile.listen((value, changed) => {
 
 Map store object link is the same. `store.set(newObject)` changes all keys
 inside the old object.
+
+
+### Lazy Store
+
+All stores in Nano Stores are lazy. Without subscribers they are going
+to disabled mode and could remove their value.
+
+If you want to keep the data, you can keep store in active mode even without
+subscribes by using `keepActive()`.
+
+```ts
+import { keepActive } from 'nanostores'
+
+export const store = createMap(…)
+
+keepActive(store)
+```
+
+This feature was created for the stores with a logic (like router or stores,
+which load data from the server). Moving them to disabled
+mode will reduce memory usage.
 
 
 ### Derived Store
@@ -224,7 +267,7 @@ export const newPosts = createDerived([lastVisit, posts], (when, allPosts) => {
 ### Store Builder
 
 A template to create a similar store. Each store made by the template
-is map store with at least the `id` key.
+is a map store with at least the `id` key.
 
 ```ts
 import { defineMap, BuilderStore } from 'nanostores'
@@ -282,7 +325,7 @@ import { User } from '../stores/user.js'
 export const Header = () => {
   const { userId } = useStore(profile)
   const currentUser = useStore(User(userId))
-  return <header>${currentUser.name}<header>
+  return <header>{currentUser.name}<header>
 }
 ```
 
@@ -358,6 +401,30 @@ Use `Store#listen()` if you need to add listener without calling
 callback immediately.
 
 
+### Server-Side Rendering
+
+Nano Stores support SSR. Use standard strategies.
+
+```js
+if (isServer) {
+  settings.set(initialSettings)
+  router.open(renderingPageURL)
+}
+```
+
+You can wait for async operations (for instance, data loading
+via isomorphic `fetch()`) before rendering the page:
+
+```jsx
+import { allEffects } from 'nanostores'
+
+store.listen(() => {}) // Move store to active mode to start data loading
+await allEffects()
+
+const html = ReactDOMServer.renderToString(<App />)
+```
+
+
 ### Tests
 
 Adding an empty listener by `keepActive(store)` keeps the store
@@ -376,6 +443,18 @@ afterEach(() => {
 it('is anonymous from the beginning', () => {
   keepActive(profile)
   expect(getValue(profile)).toEqual({ name: 'anonymous' })
+})
+```
+
+You can use `allEffects()` to wait all async operations in stores.
+
+```ts
+import { getValue, allEffects } from 'nanostores'
+
+it('saves user', async () => {
+  saveUser()
+  await allEffects()
+  expect(getValue(analyticsEvents)).toEqual(['user:save'])
 })
 ```
 
@@ -415,10 +494,10 @@ export const userInApp = createDerived(currentTime, now => {
 })
 ```
 
-We recommend moving all logic, which is not highly related to UI to the stores.
+We recommend moving all logic, which is not highly related to UI, to the stores.
 Let your stores track URL routing, validation, sending data to a server.
 
-With application logic in the stores, it’s much easy to write and run tests.
+With application logic in the stores, it is much easier to write and run tests.
 It is also easy to change your UI framework. For instance, add React Native
 version of the application.
 
@@ -459,12 +538,12 @@ function getAvatar (user: BuilderStore<typeof User>) {
 
 ### Separate changes and reaction
 
-Use separated listener to react on new store’s value, not a function where you
+Use a separated listener to react on new store’s value, not a function where you
 change this store.
 
 ```diff
   function increase () {
-    counter.set(getValue(counter) + 1)
+    update(counter, value => value + 1)
 -   printCounter(getValue(counter))
   }
 
@@ -473,8 +552,8 @@ change this store.
 + })
 ```
 
-Change functions are often not only way for store to get new value.
-For instance, persistent store could get new value from another browser tab.
+A "change" function is not only a way for store to a get new value.
+For instance, persistent store could get the new value from another browser tab.
 
 With this separation your UI will be ready to any source of store’s changes.
 
@@ -491,74 +570,53 @@ to subscribe to store changes and always render the actual data.
 + const { userId } = useStore(profile)
 ```
 
+In store’s functions you can use `update` and `updateKey` shortcuts:
 
-## Build-in Stores
-
-### Persistent
-
-You can create a store to keep value with some prefix in `localStorage`.
-
-```ts
-import { createPersistent } from 'nanostores'
-
-export interface CartValue {
-  list: string[]
-}
-
-export const shoppingCart = createPersistent<CartValue>({ list: [] }, 'cart')
+```diff
+  function increase () {
+-   counter.set(getValue(counter) + 1)
++   update(counter, value => value + 1)
+  }
 ```
 
-This store also listen for keys changes in `localStorage` and can be used
-to synchronize changes between browser tabs.
+
+## Known Issues
+
+### Diamond Problem
+
+To make stores simple and small, Nano Stores doesn’t solve “Diamond problem”.
+
+```
+  A
+  ↓
+F←B→C
+↓   ↓
+↓   D
+↓   ↓
+G→H←E
+```
+
+On `A` store changes, `H` store will be called twice in different time
+by change signals coming from different branches.
+
+You need to care about these changes on your own.
 
 
-### Router
+### ESM
 
-Since we promote moving logic to store, the router is a good part
-of the application to be moved from UI framework like React.
+Nano Stores use ES modules and doesn’t provide CommonJS exports.
+You need to use ES modules in your application to import Nano Stores.
 
-```ts
-import { createRouter } from 'nanostores'
+For instance, for Next.js you need to use [`next-transpile-modules`] to fix
+lack of ESM support in Next.js.
 
-// Types for :params in route templates
-interface Routes {
-  home: void
-  category: 'categoryId'
-  post: 'categoryId' | 'id'
-}
+```js
+// next.config.js
+const withTM = require('next-transpile-modules')(['nanostores'])
 
-export const router = createRouter<Routes>({
-  home: '/',
-  category: '/posts/:categoryId',
-  post: '/posts/:categoryId/:id'
+module.exports = withTM({
+  /* previous configuration goes here */
 })
 ```
 
-Store in active mode listen for `<a>` clicks on `document.body` and Back button
-in browser.
-
-You can use `getPagePath()` to avoid hard coding URL to a template. It is better
-to use the router as a single place of truth.
-
-```tsx
-import { getPagePath } from 'nanostores'
-
-…
-  <a href={getPagePath(router, 'post', { categoryId: 'guides', id: '10' })}>
-```
-
-If you need to change URL programmatically you can use `openPage`
-or `replacePage`:
-
-```ts
-import { openPage, replacePage } from 'nanostores'
-
-function requireLogin () {
-  openPage(router, 'login')
-}
-
-function onLoginSuccess() {
-  // Replace login route, so we don’t face it on back navigation
-  replacePage(router, 'home')
-}
-```
+[`next-transpile-modules`]: https://www.npmjs.com/package/next-transpile-modules

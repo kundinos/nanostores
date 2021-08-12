@@ -4,9 +4,11 @@
   "version": "0.3.3",
   "description": "A tiny (152 bytes) state manager for React/Preact/Vue/Svelte with many atomic tree-shakable stores",
   "keywords": [
-    "logux",
+    "nano",
+    "state",
     "state manager",
     "react",
+    "react native",
     "preact",
     "vue",
     "svelte",
@@ -43,6 +45,9 @@
     },
     "./package.json": "./package.json"
   },
+  "react-native": {
+    "./react/batch/index.js": "./react/batch/index.native.js"
+  },
   "engines": {
     "node": "^12.0.0 || ^14.0.0 || >=16.0.0"
   },
@@ -70,42 +75,42 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.14.6",
-    "@logux/core": "^0.7.0",
-    "@logux/eslint-config": "^45.4.4",
-    "@logux/sharec-config": "^0.10.2",
-    "@size-limit/preset-small-lib": "^4.12.0",
+    "@babel/core": "^7.15.0",
+    "@logux/eslint-config": "^45.4.7",
+    "@logux/sharec-config": "^0.11.0",
+    "@size-limit/preset-small-lib": "^5.0.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/preact": "^2.0.1",
     "@testing-library/react": "^12.0.0",
     "@testing-library/vue": "^6.4.0",
-    "@types/jest": "^26.0.23",
-    "@types/jsdom": "^16.2.11",
-    "@types/node": "^15.14.2",
-    "@types/react": "^17.0.11",
-    "@types/react-dom": "^17.0.8",
+    "@types/jest": "^27.0.1",
+    "@types/jsdom": "^16.2.13",
+    "@types/node": "^16.6.1",
+    "@types/react": "^17.0.17",
+    "@types/react-dom": "^17.0.9",
     "@types/rollup-plugin-peer-deps-external": "^2.2.1",
-    "@types/ws": "^7.4.5",
-    "@typescript-eslint/eslint-plugin": "^4.28.0",
-    "@typescript-eslint/parser": "^4.28.0",
-    "@vue/compiler-sfc": "^3.1.2",
-    "check-dts": "^0.4.4",
+    "@types/ws": "^7.4.7",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "@vue/compiler-sfc": "^3.2.2",
+    "check-dts": "^0.5.5",
     "clean-publish": "^2.2.0",
-    "eslint": "^7.29.0",
+    "eslint": "^7.32.0",
     "eslint-config-standard": "^16.0.3",
-    "eslint-plugin-es5": "^1.5.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-import": "^2.24.0",
+    "eslint-plugin-jest": "^24.4.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prefer-let": "^1.1.0",
     "eslint-plugin-promise": "^5.1.0",
     "eslint-plugin-security": "^1.4.0",
-    "eslint-plugin-unicorn": "^33.0.1",
-    "lint-staged": "^11.0.0",
+    "eslint-plugin-unicorn": "^35.0.0",
+    "jest": "^27.0.6",
+    "jest-localstorage-mock": "^2.4.16",
+    "lint-staged": "^11.1.2",
     "nanodelay": "^2.0.0",
     "np": "^7.5.0",
-    "preact": "^10.5.13",
-    "prettier": "^2.3.1",
+    "preact": "^10.5.14",
+    "prettier": "^2.3.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "rollup": "^2.53.2",
@@ -113,10 +118,10 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-typescript2": "^0.30.0",
-    "simple-git-hooks": "^2.4.1",
-    "size-limit": "^4.12.0",
-    "ts-jest": "^27.0.3",
-    "typescript": "^4.3.4",
+    "simple-git-hooks": "^2.5.1",
+    "size-limit": "^5.0.3",
+    "ts-jest": "^27.0.4",
+    "typescript": "^4.3.5",
     "vue": "^3.1.1",
     "yaspeller": "^7.0.0"
   },
@@ -142,6 +147,24 @@
       "eslint --fix"
     ]
   },
+  "jest": {
+    "preset": "ts-jest/presets/default-esm",
+    "globals": {
+      "ts-jest": {
+        "useESM": true,
+        "isolatedModules": true
+      }
+    },
+    "testEnvironment": "jsdom",
+    "coverageThreshold": {
+      "global": {
+        "statements": 100
+      }
+    },
+    "setupFiles": [
+      "jest-localstorage-mock"
+    ]
+  },
   "eslintConfig": {
     "extends": "@logux/eslint-config/esm",
     "rules": {
@@ -164,21 +187,21 @@
       "import": {
         "./index.js": "{ createStore }"
       },
-      "limit": "152 B"
+      "limit": "172 B"
     },
     {
       "name": "Map",
       "import": {
         "./index.js": "{ defineMap }"
       },
-      "limit": "307 B"
+      "limit": "326 B"
     },
     {
       "name": "All",
       "import": {
-        "./index.js": "{ createStore, defineMap, createDerived, getValue }"
+        "./index.js": "{ createStore, defineMap, createDerived, getValue, effect }"
       },
-      "limit": "459 B"
+      "limit": "526 B"
     },
     {
       "name": "React",
@@ -186,7 +209,7 @@
         "./react/index.js": "{ useStore }",
         "./index.js": "{ createStore, defineMap, createDerived, getValue }"
       },
-      "limit": "552 B"
+      "limit": "575 B"
     },
     {
       "name": "Vue",
@@ -194,14 +217,7 @@
         "./vue/index.js": "{ useStore }",
         "./index.js": "{ createStore, defineMap, createDerived, getValue }"
       },
-      "limit": "549 B"
-    },
-    {
-      "name": "Router",
-      "import": {
-        "./index.js": "{ createRouter }"
-      },
-      "limit": "771 B"
+      "limit": "570 B"
     }
   ],
   "yaspeller": {
@@ -213,8 +229,6 @@
     ],
     "dictionary": [
       "Versioning",
-      "GraphQL",
-      "roadmap",
       "Logux",
       "CRDT",
       "Vue",
@@ -226,12 +240,18 @@
       "unsubscribing",
       "unsubscribe",
       "JS",
-      "programmatically",
-      "composable"
+      "composable",
+      "ESM",
+      "js",
+      "async",
+      "ES",
+      "CommonJS",
+      "SSR",
+      "isomorphic"
     ]
   },
   "sharec": {
     "config": "@logux/sharec-config",
-    "version": "0.10.2"
+    "version": "0.11.0"
   }
 }

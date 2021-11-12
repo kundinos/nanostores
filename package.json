@@ -1,6 +1,6 @@
 {
   "name": "@kundinos/nanostores",
-  "version": "0.4.5-0",
+  "version": "0.4.3",
   "description": "A tiny (152 bytes) state manager for React/Preact/Vue/Svelte with many atomic tree-shakable stores",
   "keywords": [
     "nano",
@@ -24,23 +24,23 @@
   "homepage": "https://github.com/kundinos/nanostores",
   "repository": "kundinos/nanostores",
   "sideEffects": false,
-  "main": "./index.cjs",
+  "main": "./index.common.js",
   "exports": {
     ".": {
-      "require": "./index.cjs",
-      "default": "./index.cjs"
+      "require": "./index.common.js",
+      "default": "./index.js"
     },
     "./vue": {
-      "require": "./vue/index.cjs",
-      "default": "./vue/index.cjs"
+      "require": "./vue/index.common.js",
+      "default": "./vue/index.js"
     },
     "./react": {
-      "require": "./react/index.cjs",
-      "default": "./react/index.cjs"
+      "require": "./react/index.common.js",
+      "default": "./react/index.js"
     },
     "./preact": {
-      "require": "./preact/index.cjs",
-      "default": "./preact/index.cjs"
+      "require": "./preact/index.common.js",
+      "default": "./preact/index.js"
     },
     "./package.json": "./package.json"
   },

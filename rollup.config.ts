@@ -9,19 +9,19 @@ import resolve from 'rollup-plugin-node-resolve'
 const dists = [
   {
     input: path.resolve(__dirname, './index.js'),
-    output: path.resolve(__dirname, './index.cjs')
+    output: path.resolve(__dirname, './index.common.js')
   },
   {
     input: path.resolve(__dirname, './preact/index.js'),
-    output: path.resolve(__dirname, './preact/index.cjs')
+    output: path.resolve(__dirname, './preact/index.common.js')
   },
   {
     input: path.resolve(__dirname, './react/index.js'),
-    output: path.resolve(__dirname, './react/index.cjs')
+    output: path.resolve(__dirname, './react/index.common.js')
   },
   {
     input: path.resolve(__dirname, './vue/index.js'),
-    output: path.resolve(__dirname, './vue/index.cjs')
+    output: path.resolve(__dirname, './vue/index.common.js')
   }
 ]
 

@@ -1,6 +1,6 @@
 {
   "name": "@kundinos/nanostores",
-  "version": "0.4.5-1",
+  "version": "0.4.5",
   "description": "A tiny (152 bytes) state manager for React/Preact/Vue/Svelte with many atomic tree-shakable stores",
   "keywords": [
     "nano",
